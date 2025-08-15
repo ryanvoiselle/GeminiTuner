@@ -1,0 +1,41 @@
+# This is a conceptual example and will not run without a connected OBD-II device.
+# It demonstrates how to READ data, not write it.
+
+try:
+    import obd
+
+    # Auto-connect to the first available serial port
+    connection = obd.OBD()
+
+    if not connection.is_connected():
+        print("Failed to connect to OBD-II adapter.")
+    else:
+        print("Successfully connected to OBD-II adapter.")
+
+        # Create a command for RPM
+        rpm_cmd = obd.commands.RPM
+
+        # Query the command
+        response = connection.query(rpm_cmd)
+
+        if not response.is_null():
+            print(f"Current Engine RPM: {response.value}")
+        else:
+            print("Did not receive a valid response for RPM.")
+
+        # Example of reading vehicle speed
+        speed_cmd = obd.commands.SPEED
+        speed_response = connection.query(speed_cmd)
+        if not speed_response.is_null():
+            print(f"Current Vehicle Speed: {speed_response.value}")
+        else:
+            print("Did not receive a valid response for Speed.")
+
+        # Close the connection
+        connection.close()
+
+except ImportError:
+    print("The 'obd' library is not installed. Please install it using: pip install obd-py")
+except Exception as e:
+    print(f"An error occurred: {e}")
+    print("This could be due to no OBD-II adapter being found or a connection issue.")
